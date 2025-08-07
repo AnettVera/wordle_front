@@ -1,0 +1,145 @@
+{
+   "checksum": "744b081ced35f7fe0c7ea013eea84d2a",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13343502636887029",
+            "date_last_used": "0",
+            "guid": "0f838f20-3cb8-4239-b0c2-38e8e3c79384",
+            "id": "9",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "edge://surf",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "edge://surf/",
+            "visit_count": 0
+         }, {
+            "date_added": "13326406105722512",
+            "date_last_used": "0",
+            "guid": "81f030a0-f65b-4088-a174-69e438f0afd5",
+            "id": "10",
+            "name": "fw_error_www",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://academy.oracle.com/es/oa-web-overview.html",
+            "visit_count": 0
+         }, {
+            "date_added": "13337146538661132",
+            "date_last_used": "0",
+            "guid": "7ace629f-d311-401e-8719-2eb3d6273d9c",
+            "id": "11",
+            "name": "Oracle Quiz Questions: Section 2 Lesson 6: Nested Blocks and Variable Scope",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://oraclequizquestions.blogspot.com/2013/03/sectiunea-2-nested-blocks-and-variable.html",
+            "visit_count": 0
+         }, {
+            "date_added": "13337146589803689",
+            "date_last_used": "0",
+            "guid": "a4a3578d-86ef-4266-8961-2cfc73dcfcd2",
+            "id": "12",
+            "name": "PLSQL Section 2 Quiz - PDFCOFFEE.COM",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://pdfcoffee.com/plsql-section-2-quiz-pdf-free.html",
+            "visit_count": 0
+         }, {
+            "date_added": "13309114168905838",
+            "date_last_used": "0",
+            "guid": "d1304708-81cb-4293-ac2b-d95c78f80b79",
+            "id": "13",
+            "name": "Foto - Google Fotos",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://photos.google.com/search/_eAF1QipOc4j5YDekRb3RF2edsBl3r5vXhxHhp3Hw_familia/photo/AF1QipO3kHf2lUbxUdT8LvCiO6ZbxYGdcWLdwtkVPN-5",
+            "visit_count": 0
+         }, {
+            "date_added": "13355631632377569",
+            "date_last_used": "0",
+            "guid": "ac8a6905-1553-4914-b81e-3f5003fb438d",
+            "id": "14",
+            "meta_info": {
+               "power_bookmark_meta": ""
+            },
+            "name": "Vite + React",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://localhost:5173/teachers",
+            "visit_count": 0
+         } ],
+         "date_added": "13399022184277515",
+         "date_last_used": "0",
+         "date_modified": "13355631632377569",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Barra de favoritos",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "date_added": "13342333920218638",
+            "date_last_used": "0",
+            "guid": "c00241b9-e826-495f-8e97-bd060123e99c",
+            "id": "6",
+            "name": "Documento sin título - Documentos de Google",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://docs.google.com/document/d/1MvbzJCEqYAzZ306znPeaRRNMQfcqUDHp-pZbqSlBBVs/edit",
+            "visit_count": 0
+         }, {
+            "date_added": "13345357493434001",
+            "date_last_used": "0",
+            "guid": "23b4ab47-8553-4717-adc9-7146678750d3",
+            "id": "7",
+            "name": "Circuit design Neat Juttuli | Tinkercad",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.tinkercad.com/things/i6zbtFHwgYR-neat-juttuli/editel",
+            "visit_count": 0
+         }, {
+            "date_added": "13343906926482827",
+            "date_last_used": "0",
+            "guid": "4b43d78a-516c-43f2-b816-8ad678eef9bf",
+            "id": "8",
+            "name": "''\\'",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://mexico.as.com/actualidad/asi-es-la-playa-del-amor-la-famosa-playa-de-las-islas-marietas-donde-esta-y-por-que-se-llama-asi-n/",
+            "visit_count": 0
+         } ],
+         "date_added": "13399022184277515",
+         "date_last_used": "0",
+         "date_modified": "13345357493434001",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Otros favoritos",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13399022184277515",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Favoritos móviles",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CjEKDgiIgQISCGXDNs+OAQAAEgAqGEk4bStyT3pwbjBxMUROUUNPSnB5dGc9PUgDoAYHEq0BCAsSqAEKHExzN2JUMkVDdE1lNjlsbE4xMFhndFBwaENqOD0SJDdhY2U2MjlmLWQzMTEtNDAxZS04NzE5LTJlYjNkNjI3M2Q5YxgAIAAoADDv38330DE4r92g8NAxQK/doPDQMUocWFNjWXk5RWN3TElpdzRrTDkydy9wMzdSWTNVPVofIh3dR2FsTC9kUmlLQ1pmVUY5ZkNFZnZWSjhPVjZRPWX82pH7wj4CYAUSrAEICRKnAQocNEF0aUpBQTJ6OEsrbUVYRlJaZTlpeFROdXdrPRIkMGY4MzhmMjAtM2NiOC00MjM5LWIwYzItMzhlOGUzYzc5Mzg0GAAgACgAMImRk/DQMTiilpPw0DFAopaT8NAxShxBa3lkQWZYK3k4MTNGUEk0Q2tBTXVaVVk1WTQ9Wh4iHHY1OWNJeFViQmwrZlhZR21nYU1Oc1krWHorTT1lRGNa/sI+AmAFEq0BCAoSqAEKHEVXUmxqejIrRVdvMUhtekhoeVg1MFJFZGxpaz0SJDgxZjAzMGEwLWY2NWItNDA4OC1hMTc0LTY5ZTQzOGYwYWZkNRgAIAAoADDw38330DE4y9yg8NAxQMvcoPDQMUocMy9DNFJxVFpTenlvczdJS2N3UlN1MGt5VWE0PVofIh27cGpiZ3hHbTAwNlZYaS8wSml5VHlRQnJmdjB3PWV9l0OHwj4CYAUSrAEICBKnAQocbUwwOVE3WGRicDYrd1Y2V3ltUENMaEZBbkNRPRIkNGI0M2Q3OGEtNTE2Yy00M2YyLWI4MTYtOGFkNjc4ZWVmOWJmGAAgACgAMKKtz4TRMTiIss+E0TFAiLLPhNExShxzTmJ3SWtrM3VnYjZzSDd2bmQ2L3pRVmtOM0U9Wh4iHHZ1MElob3F3K1lIVlpqN2JNZG82YzF3cldTMD1lLk+chcI+AmAFEq0BCAwSqAEKHHhaNWYwWWFpZnVsTkk4bmJRUFFDY3F5Q0hEVT0SJGE0YTM1NzhkLTg2ZWYtNDI2Ni04OTYxLTJjZmM3M2RjZmNkMhgAIAAoADDu38330DE4rtyg8NAxQK7coPDQMUocU09hY3hDUE01UEdEK29GZENKYy9SckZjUXVzPVofIh3uNE8rcFJIb2tzdGVqaTdVaXROQW04c2NNbDBBPWV17Go6wj4CYAUSrAEIBhKnAQocQjFjemVBc2xtUUZaVVJFZjNycmIzLzlpZE0wPRIkYzAwMjQxYjktZTgyNi00OTVmLThlOTctYmQwNjAxMjNlOTljGAAgACgAMNHaoPDQMTjm3KDw0DFA5tyg8NAxShxwTWc1U1RhcDZpS3l0VCs5eGNuNFZ1TmVyQWc9Wh4iHFQ4M2ZlVjlyZ0htZkNPQTY1QXkwcTZseWJiVT1lOca2sMI+AmAFEq0BCA4SqAEKHC9uT1hXTzRQTnFzSnlDOENVL0dRNUdxREtETT0SJGFjOGE2OTA1LTE1NTMtNDkxNC1iODFlLTNmNTAwM2ZiNDM4ZBgAIAAoADDkhtv57DE46frdx+YxQOn63cfmMUocTGtIQkNoOFIzMW5ZaytNKzd5bFpFRUtFSWE4PVofIh37NkJpYUZqTitCRFFOQmVuTXJqTzhZYitESFE0PWWKbsC/wj4CYAUSjgEIAhKJAQocWWNTVG9udkVTUHdxQ3M0TDJjclZodjY4TDk4PRIkZDIwN2RiNDQtOWZkZi01ZGNiLTk1MWYtODA4MGE0ZDcyMDMxGAAgACgAMPywsay3MTjCtLGstzFAwrSxrLcxShxvUFZraHdCUmJWNjVLQ1dSMitJT05IV29PdTg9WgBlAAAAAMI+AmAAEq0BCA0SqAEKHEVnYnlMRWZPeHZOQUppaG9yVzZrR1pNRVBLYz0SJGQxMzA0NzA4LTgxY2ItNDI5My1hYzJiLWQ5NWM3OGY4MGI3ORgAIAAoADD3+fGm0TE4p7LPhNExQKeyz4TRMUocaDZSOFVNbFlWWndhUkRDcWhndHhWL2NCT1NvPVofIh33NWpnVEtiR0ZTZ1NLMGVGaEpPR1AxM21vOWx3PWU0kjLiwj4CYAUSjgEIARKJAQoceXhKLzZmdmtlY3I3a3A1RVF6QjR0V0xwZGJFPRIkNWJkZGMwOTMtY2Y3NC01YWJlLWE3ZmYtMmJiYmI3ZWExZDhmGAAgACgAMPuwsay3MTiotLGstzFAqLSxrLcxShxhUkNXTGdoRjliNUlucUtJRHZ1Si9qdlFrRmM9WgBlAAAAAMI+AmAAEqwBCAcSpwEKHEZLWldHTWVvcDVIbDI1blZRbS9qU0IrL1d0bz0SJDIzYjRhYjQ3LTg1NTMtNDcxNy1hZGM5LTcxNDY2Nzg3NTBkMxgAIAAoADDS2qDw0DE4gt2g8NAxQILdoPDQMUocNlE1Q0JUdU14MmFUbm5xcy8yYWlSd0FwRGVBPVoeIhxhQ1NoMElMaHFMdUtOYjJSSGdWa0NFMSticHc9ZXLabULCPgJgBRKOAQgDEokBChxuamdEdTg4ZUNydlhwODZwRDdmSEdjcUZwODg9EiQ4ZTIzYTc0ZC02ZGEwLTU0MjYtOWFkZS1kYzUwM2MzY2I4MzMYACAAKAAwgbGxrLcxOIK1say3MUCCtbGstzFKHHl6TkIwMWNuNTRBN2NSVTB1VCsvUGdtVHRVbz1aAGUAAAAAwj4CYAAwADgA",
+   "version": 1
+}

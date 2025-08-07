@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../screens/instructions_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/matchcount_screen.dart';
 
 class HeaderBar extends StatelessWidget {
   const HeaderBar({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class HeaderBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(width: 40), // Espacio para balancear los íconos
+          const SizedBox(width: 40), 
           const Text(
             'WORDLE',
             style: TextStyle(
@@ -32,6 +33,18 @@ class HeaderBar extends StatelessWidget {
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (_, __, ___) => const ProfileScreen(),
+                      transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.link, color: AppColors.text),
+                tooltip: 'Vincular con Alexa',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => const MatchcountScreen(),
                       transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
                     ),
                   );
