@@ -18,7 +18,7 @@ Sigue estos pasos para clonar y ejecutar el proyecto en tu máquina local.
 
 2.  **Navega al directorio del proyecto:**
     ```bash
-    cd wordle_front/flutter_aplication_1
+    cd wordle_front/
     ```
 
 3.  **Instala las dependencias:**
