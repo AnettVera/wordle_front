@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../services/link_service.dart';
 
 class MatchcountScreen extends StatefulWidget {
   const MatchcountScreen({Key? key}) : super(key: key);
@@ -10,11 +11,61 @@ class MatchcountScreen extends StatefulWidget {
 
 class _MatchcountScreenState extends State<MatchcountScreen> {
   String? _code;
+  String? _message;
+  bool _isLoading = false;
+  bool _isLinked = false;
+  String? _alexaUserId;
+  String? _statusMessage;
 
-  void _generateCode() {
+  Future<void> _generateCode() async {
     setState(() {
-      _code = '1234'; // Aquí puedes poner lógica para generar un código real
+      _isLoading = true;
+      _message = null;
+      _code = null;
+      _isLinked = false;
+      _alexaUserId = null;
+      _statusMessage = null;
     });
+    try {
+      final result = await LinkService.generatePin();
+      setState(() {
+        _code = result['pin']?.toString();
+        _message = result['message'] ?? 'PIN generado correctamente.';
+      });
+    } catch (e) {
+      setState(() {
+        _message = 'Error al generar el código: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _checkLinkStatus() async {
+    setState(() {
+      _isLoading = true;
+      _statusMessage = null;
+    });
+    try {
+      final result = await LinkService.checkLinkStatus();
+      setState(() {
+        _isLinked = result['isLinked'] == true;
+        _alexaUserId = result['alexaUserId']?.toString();
+        _statusMessage = _isLinked
+            ? '¡Cuenta vinculada correctamente con Alexa!'
+            : 'Aún no se ha vinculado la cuenta.';
+      });
+    } catch (e) {
+      setState(() {
+        _statusMessage = 'Error al verificar estado: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -50,25 +101,63 @@ class _MatchcountScreenState extends State<MatchcountScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
+            if (_message != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                _message!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.bold),
+              ),
+            ],
             const SizedBox(height: 40),
             if (_code != null)
               Center(
                 child: _CodeBox(label: 'Código', value: _code!),
               ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: _generateCode,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.darkGrey,
-                foregroundColor: AppColors.text,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            if (_statusMessage != null) ...[
+              const SizedBox(height: 24),
+              Text(
+                _statusMessage!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: _isLinked ? AppColors.green : Colors.red,
+                  fontWeight: FontWeight.bold,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              child: Text(buttonText),
-            ),
+            ],
+            const Spacer(),
+            if (_isLoading)
+              const CircularProgressIndicator()
+            else ...[
+              ElevatedButton(
+                onPressed: _generateCode,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.darkGrey,
+                  foregroundColor: AppColors.text,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                child: Text(buttonText),
+              ),
+              const SizedBox(height: 16),
+              if (_code != null)
+                ElevatedButton(
+                  onPressed: _checkLinkStatus,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  child: const Text('Verificar estado de vinculación'),
+                ),
+            ],
             const SizedBox(height: 24),
           ],
         ),
