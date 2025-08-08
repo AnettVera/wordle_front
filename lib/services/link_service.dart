@@ -44,4 +44,26 @@ class LinkService {
       throw Exception('Error al verificar estado: ${response.body}');
     }
   }
+
+  // Agrega este método dentro de LinkService
+  static Future<Map<String, dynamic>> unlinkAccount() async {
+    final idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+    if (idToken == null) {
+      throw Exception('No autenticado');
+    }
+
+    final response = await http.get(
+      Uri.parse('$_baseUrl/wordle?action=unlink'),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Error al desvincular cuenta: ${response.body}');
+    }
+  }
 }

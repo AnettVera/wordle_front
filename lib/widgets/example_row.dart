@@ -19,10 +19,14 @@ class ExampleRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (i) {
-        return LetterBox(
-          letter: letters[i],
-          color: colors[i],
-          animate: false,
+        return SizedBox(
+          width: 55, // Ajusta este valor según lo que necesites
+          height: 55,
+          child: LetterBox(
+            letter: letters[i],
+            color: colors[i],
+            animate: false,
+          ),
         );
       }),
     );
