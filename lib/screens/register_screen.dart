@@ -29,14 +29,125 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  // Validación de email mejorada
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Ingresa tu email';
+    }
+    
+    String trimmedValue = value.trim().toLowerCase();
+    
+    // Verificar formato básico
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(trimmedValue)) {
+      return 'Ingresa un email válido';
+    }
+    
+    // Verificar que no tenga espacios
+    if (trimmedValue.contains(' ')) {
+      return 'El email no puede contener espacios';
+    }
+    
+    // Verificar longitud mínima y máxima
+    if (trimmedValue.length < 5) {
+      return 'El email es muy corto';
+    }
+    
+    if (trimmedValue.length > 50) {
+      return 'El email es muy largo (máximo 50 caracteres)';
+    }
+    
+    // Verificar que no tenga puntos consecutivos
+    if (trimmedValue.contains('..')) {
+      return 'El email no puede tener puntos consecutivos';
+    }
+    
+    // Verificar que no empiece o termine con punto
+    if (trimmedValue.startsWith('.') || trimmedValue.endsWith('.')) {
+      return 'El email no puede empezar o terminar con punto';
+    }
+    
+    return null;
+  }
+
+  // Validación de contraseña mejorada
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Ingresa una contraseña';
+    }
+    
+    if (value.length < 8) {
+      return 'La contraseña debe tener al menos 8 caracteres';
+    }
+    
+    if (value.length > 128) {
+      return 'La contraseña es muy larga (máximo 128 caracteres)';
+    }
+    
+    // Verificar que no tenga solo espacios
+    if (value.trim().isEmpty) {
+      return 'La contraseña no puede estar vacía';
+    }
+    
+    // Verificar complejidad
+    bool hasUppercase = RegExp(r'[A-Z]').hasMatch(value);
+    bool hasLowercase = RegExp(r'[a-z]').hasMatch(value);
+    bool hasDigits = RegExp(r'[0-9]').hasMatch(value);
+    bool hasSpecialCharacters = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
+    
+    List<String> missing = [];
+    if (!hasUppercase) missing.add('mayúscula');
+    if (!hasLowercase) missing.add('minúscula');
+    if (!hasDigits) missing.add('número');
+    if (!hasSpecialCharacters) missing.add('carácter especial');
+    
+    if (missing.length > 2) {
+      return 'Contraseña débil. Incluye al menos: mayúsculas, minúsculas, números y símbolos';
+    }
+    
+    // Verificar patrones comunes débiles
+    if (RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return 'No uses solo números';
+    }
+    
+    if (RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+      return 'Incluye números o símbolos';
+    }
+    
+    // Verificar secuencias comunes
+    List<String> commonPatterns = ['123456', 'abcdef', 'qwerty', 'password', '111111'];
+    for (String pattern in commonPatterns) {
+      if (value.toLowerCase().contains(pattern)) {
+        return 'Evita usar secuencias o palabras comunes';
+      }
+    }
+    
+    return null;
+  }
+
+  // Validación de confirmación de contraseña
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Confirma tu contraseña';
+    }
+    
+    if (value != _passwordController.text) {
+      return 'Las contraseñas no coinciden';
+    }
+    
+    return null;
+  }
+
   Future<void> _register() async {
+    // Limpiar espacios en blanco del email
+    _emailController.text = _emailController.text.trim().toLowerCase();
+    
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
       await _authService.registerWithEmailAndPassword(
-        _emailController.text.trim(),
+        _emailController.text,
         _passwordController.text,
       );
       
@@ -60,7 +171,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'Cerrar',
+          textColor: Colors.white,
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+        ),
       ),
     );
   }
@@ -93,6 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -123,6 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   style: const TextStyle(color: AppColors.text),
                   decoration: const InputDecoration(
                     labelText: 'Email',
@@ -132,15 +250,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColors.green),
                     ),
+                    helperText: 'Ejemplo: usuario@correo.com',
+                    helperStyle: TextStyle(color: AppColors.text, fontSize: 12),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa tu email';
+                  validator: _validateEmail,
+                  onChanged: (value) {
+                    // Limpiar en tiempo real
+                    if (value.contains(' ')) {
+                      _emailController.text = value.replaceAll(' ', '');
+                      _emailController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _emailController.text.length),
+                      );
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Ingresa un email válido';
-                    }
-                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -149,6 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.next,
                   style: const TextStyle(color: AppColors.text),
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
@@ -165,15 +287,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: AppColors.green),
                     ),
+                    helperText: 'Mínimo 8 caracteres con mayúsculas, números y símbolos',
+                    helperStyle: const TextStyle(color: AppColors.text, fontSize: 12),
+                    helperMaxLines: 2,
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa una contraseña';
+                  validator: _validatePassword,
+                  onChanged: (value) {
+                    // Revalidar confirmación de contraseña cuando cambie la contraseña
+                    if (_confirmPasswordController.text.isNotEmpty) {
+                      _formKey.currentState?.validate();
                     }
-                    if (value.length < 6) {
-                      return 'La contraseña debe tener al menos 6 caracteres';
-                    }
-                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -182,6 +305,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
+                  textInputAction: TextInputAction.done,
                   style: const TextStyle(color: AppColors.text),
                   decoration: InputDecoration(
                     labelText: 'Confirmar Contraseña',
@@ -199,15 +323,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderSide: BorderSide(color: AppColors.green),
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Confirma tu contraseña';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Las contraseñas no coinciden';
-                    }
-                    return null;
-                  },
+                  validator: _validateConfirmPassword,
+                  onFieldSubmitted: (_) => _register(),
                 ),
                 const SizedBox(height: 32),
 

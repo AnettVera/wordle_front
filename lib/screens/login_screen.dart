@@ -19,6 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   
   bool _isLoading = false;
   bool _obscurePassword = true;
+  int _failedAttempts = 0;
+  DateTime? _lastFailedAttempt;
 
   @override
   void dispose() {
@@ -27,21 +29,123 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // Validación de email mejorada
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Ingresa tu email';
+    }
+    
+    String trimmedValue = value.trim().toLowerCase();
+    
+    // Verificar formato básico
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(trimmedValue)) {
+      return 'Formato de email inválido';
+    }
+    
+    // Verificar que no tenga espacios
+    if (trimmedValue.contains(' ')) {
+      return 'El email no puede contener espacios';
+    }
+    
+    // Verificar longitud
+    if (trimmedValue.length < 5) {
+      return 'Email muy corto';
+    }
+    
+    if (trimmedValue.length > 50) {
+      return 'Email muy largo (máximo 50 caracteres)';
+    }
+    
+    return null;
+  }
+
+  // Validación de contraseña para login
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Ingresa tu contraseña';
+    }
+    
+    // Para login, validaciones más permisivas (el usuario ya tiene cuenta)
+    if (value.length < 6) {
+      return 'Contraseña muy corta';
+    }
+    
+    if (value.length > 128) {
+      return 'Contraseña muy larga';
+    }
+    
+    // Verificar que no sea solo espacios
+    if (value.trim().isEmpty) {
+      return 'La contraseña no puede estar vacía';
+    }
+    
+    return null;
+  }
+
+  // Verificar si el usuario está bloqueado temporalmente
+  bool _isTemporarilyBlocked() {
+    if (_failedAttempts < 3) return false;
+    
+    if (_lastFailedAttempt != null) {
+      final timeSinceLastAttempt = DateTime.now().difference(_lastFailedAttempt!);
+      if (timeSinceLastAttempt.inMinutes < 5) {
+        return true;
+      } else {
+        // Reset después de 5 minutos
+        _failedAttempts = 0;
+        _lastFailedAttempt = null;
+        return false;
+      }
+    }
+    
+    return false;
+  }
+
   Future<void> _signIn() async {
+    // Verificar bloqueo temporal
+    if (_isTemporarilyBlocked()) {
+      final remainingTime = 5 - DateTime.now().difference(_lastFailedAttempt!).inMinutes;
+      _showErrorSnackBar('Demasiados intentos fallidos. Espera $remainingTime minutos.');
+      return;
+    }
+
+    // Limpiar espacios en blanco del email
+    _emailController.text = _emailController.text.trim().toLowerCase();
+    
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
       await _authService.signInWithEmailAndPassword(
-        _emailController.text.trim(),
+        _emailController.text,
         _passwordController.text,
       );
+      
+      // Reset failed attempts on successful login
+      _failedAttempts = 0;
+      _lastFailedAttempt = null;
+      
       // AuthWrapper se encargará de navegar automáticamente al GameScreen
     } on FirebaseAuthException catch (e) {
-      _showErrorSnackBar(_authService.getErrorMessage(e));
+      // Incrementar intentos fallidos
+      _failedAttempts++;
+      _lastFailedAttempt = DateTime.now();
+      
+      String errorMessage = _authService.getErrorMessage(e);
+      
+      // Agregar información sobre bloqueo si es necesario
+      if (_failedAttempts >= 3) {
+        errorMessage += '\n\nDemasiados intentos fallidos. Espera 5 minutos antes de intentar de nuevo.';
+      } else if (_failedAttempts >= 2) {
+        errorMessage += '\n\nIntento ${_failedAttempts} de 3. Ten cuidado.';
+      }
+      
+      _showErrorSnackBar(errorMessage);
     } catch (e) {
-      _showErrorSnackBar('Error inesperado. Inténtalo de nuevo.');
+      _failedAttempts++;
+      _lastFailedAttempt = DateTime.now();
+      _showErrorSnackBar('Error inesperado. Verifica tu conexión e inténtalo de nuevo.');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -52,13 +156,104 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Cerrar',
+          textColor: Colors.white,
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+        ),
+      ),
+    );
+  }
+
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.background,
+        title: const Text(
+          'Recuperar Contraseña',
+          style: TextStyle(color: AppColors.text),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Ingresa tu email para recibir un enlace de recuperación',
+              style: TextStyle(color: AppColors.text),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: AppColors.text),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: AppColors.text),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.green),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.text),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              String email = emailController.text.trim().toLowerCase();
+              if (email.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Ingresa un email válido'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              
+              try {
+                await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Enlace de recuperación enviado. Revisa tu email.'),
+                    backgroundColor: AppColors.green,
+                    duration: Duration(seconds: 4),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Error al enviar el email. Verifica que la dirección sea correcta.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text(
+              'Enviar',
+              style: TextStyle(color: AppColors.green),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isBlocked = _isTemporarilyBlocked();
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -66,6 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,20 +278,36 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Inicia sesión para jugar',
+                Text(
+                  isBlocked 
+                      ? 'Cuenta bloqueada temporalmente'
+                      : 'Inicia sesión para jugar',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.text,
+                    color: isBlocked ? Colors.red : AppColors.text,
                     fontSize: 16,
                   ),
                 ),
+                if (_failedAttempts > 0 && !isBlocked)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Intentos fallidos: $_failedAttempts/3',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 48),
 
                 // Campo Email
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  enabled: !isBlocked,
                   style: const TextStyle(color: AppColors.text),
                   decoration: const InputDecoration(
                     labelText: 'Email',
@@ -106,14 +318,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderSide: BorderSide(color: AppColors.green),
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa tu email';
+                  validator: _validateEmail,
+                  onChanged: (value) {
+                    // Limpiar espacios en tiempo real
+                    if (value.contains(' ')) {
+                      _emailController.text = value.replaceAll(' ', '');
+                      _emailController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _emailController.text.length),
+                      );
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Ingresa un email válido';
-                    }
-                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -122,6 +335,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  enabled: !isBlocked,
                   style: const TextStyle(color: AppColors.text),
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
@@ -139,18 +354,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderSide: BorderSide(color: AppColors.green),
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingresa tu contraseña';
-                    }
-                    return null;
-                  },
+                  validator: _validatePassword,
+                  onFieldSubmitted: (_) => _signIn(),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 8),
+
+                // Enlace Olvidé mi contraseña
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: isBlocked ? null : _showForgotPasswordDialog,
+                    child: const Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(
+                        color: AppColors.green,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
                 // Botón Iniciar Sesión
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _signIn,
+                  onPressed: (_isLoading || isBlocked) ? null : _signIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.green,
                     foregroundColor: Colors.white,
@@ -161,16 +388,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Iniciar Sesión',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      : Text(
+                          isBlocked ? 'Cuenta Bloqueada' : 'Iniciar Sesión',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                 ),
                 const SizedBox(height: 16),
 
                 // Botón Registrarse
                 TextButton(
-                  onPressed: _isLoading
+                  onPressed: (_isLoading || isBlocked)
                       ? null
                       : () {
                           Navigator.push(
